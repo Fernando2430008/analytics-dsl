@@ -1,0 +1,54 @@
+datasource customers { 
+    type csv 
+    location "s3://datasets/customers.csv" 
+} 
+ 
+preprocess customer_pipe { 
+    input customers 
+    drop ["id"]
+    impute mean ["age","income"] 
+    scale standard ["age","income"] 
+    encode onehot ["gender","city"] 
+} 
+ 
+learner classifier { 
+    algorithm random_forest 
+    parameters { 
+        trees = 200 
+        depth = 10 
+    } 
+} 
+ 
+model churn_model { 
+    fit classifier 
+    using customer_pipe 
+    target churn 
+} 
+
+evaluate churn_eval { 
+    model churn_model 
+    datasource customers 
+    split cross_validation { 
+        folds 10 
+        stratify true 
+        random_state 42 
+    } 
+    metrics [accuracy, precision, recall, f1, auc] 
+} 
+
+evaluate churn_eval { 
+    model churn_model 
+    datasource customers 
+    split holdout { 
+        train 0.7 
+        test 0.3 
+        stratify true 
+        random_state 42 
+    } 
+    metrics [accuracy,precision,recall,f1] 
+} 
+
+predict churn_prediction { 
+    model churn_model 
+    datasource customers 
+} 

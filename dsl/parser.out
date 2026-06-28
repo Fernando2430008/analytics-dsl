@@ -1,0 +1,751 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    COMMENT
+    EVALUATE
+    EXPECT
+    EXPORT
+    FIT
+    FOLDS
+    GREATER
+    LESS
+    LPAREN
+    METRICS
+    MODEL
+    OPTIMIZE
+    PREDICT
+    RANDOM_STATE
+    RPAREN
+    SAVE_TO
+    SPLIT
+    STRATIFY
+    TARGET
+    TEST
+    TRAIN
+    USING
+    VALIDATION
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> declarations
+Rule 2     declarations -> declarations declaration
+Rule 3     declarations -> declaration
+Rule 4     declaration -> DATASOURCE ID LBRACE datasource_body RBRACE
+Rule 5     datasource_body -> datasource_body datasource_field
+Rule 6     datasource_body -> datasource_field
+Rule 7     datasource_field -> TYPE ID
+Rule 8     datasource_field -> LOCATION STRING
+Rule 9     declaration -> PREPROCESS ID LBRACE preprocess_body RBRACE
+Rule 10    preprocess_body -> preprocess_body preprocess_field
+Rule 11    preprocess_body -> preprocess_field
+Rule 12    preprocess_field -> INPUT ID
+Rule 13    preprocess_field -> DROP LBRACKET list_strings RBRACKET
+Rule 14    preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET
+Rule 15    preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET
+Rule 16    preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET
+Rule 17    declaration -> LEARNER ID LBRACE learner_body RBRACE
+Rule 18    learner_body -> learner_body learner_field
+Rule 19    learner_body -> learner_field
+Rule 20    learner_field -> ALGORITHM ID
+Rule 21    learner_field -> PARAMETERS LBRACE learner_parameter_body RBRACE
+Rule 22    learner_parameter_body -> learner_parameter_body learner_parameter_field
+Rule 23    learner_parameter_body -> learner_parameter_field
+Rule 24    learner_parameter_field -> ID EQUALS NUMBER
+Rule 25    value -> TRUE
+Rule 26    value -> FALSE
+Rule 27    list_strings -> list_strings COMMA STRING
+Rule 28    list_strings -> STRING
+
+Terminals, with rules where they appear
+
+ALGORITHM            : 20
+COMMA                : 27
+COMMENT              : 
+DATASOURCE           : 4
+DROP                 : 13
+ENCODE               : 16
+EQUALS               : 24
+EVALUATE             : 
+EXPECT               : 
+EXPORT               : 
+FALSE                : 26
+FIT                  : 
+FOLDS                : 
+GREATER              : 
+ID                   : 4 7 9 12 14 15 16 17 20 24
+IMPUTE               : 14
+INPUT                : 12
+LBRACE               : 4 9 17 21
+LBRACKET             : 13 14 15 16
+LEARNER              : 17
+LESS                 : 
+LOCATION             : 8
+LPAREN               : 
+METRICS              : 
+MODEL                : 
+NUMBER               : 24
+OPTIMIZE             : 
+PARAMETERS           : 21
+PREDICT              : 
+PREPROCESS           : 9
+RANDOM_STATE         : 
+RBRACE               : 4 9 17 21
+RBRACKET             : 13 14 15 16
+RPAREN               : 
+SAVE_TO              : 
+SCALE                : 15
+SPLIT                : 
+STRATIFY             : 
+STRING               : 8 27 28
+TARGET               : 
+TEST                 : 
+TRAIN                : 
+TRUE                 : 25
+TYPE                 : 7
+USING                : 
+VALIDATION           : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+datasource_body      : 4 5
+datasource_field     : 5 6
+declaration          : 2 3
+declarations         : 1 2
+learner_body         : 17 18
+learner_field        : 18 19
+learner_parameter_body : 21 22
+learner_parameter_field : 22 23
+list_strings         : 13 14 15 16 27
+preprocess_body      : 9 10
+preprocess_field     : 10 11
+program              : 0
+value                : 
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . declarations
+    (2) declarations -> . declarations declaration
+    (3) declarations -> . declaration
+    (4) declaration -> . DATASOURCE ID LBRACE datasource_body RBRACE
+    (9) declaration -> . PREPROCESS ID LBRACE preprocess_body RBRACE
+    (17) declaration -> . LEARNER ID LBRACE learner_body RBRACE
+
+    DATASOURCE      shift and go to state 4
+    PREPROCESS      shift and go to state 5
+    LEARNER         shift and go to state 6
+
+    program                        shift and go to state 1
+    declarations                   shift and go to state 2
+    declaration                    shift and go to state 3
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> declarations .
+    (2) declarations -> declarations . declaration
+    (4) declaration -> . DATASOURCE ID LBRACE datasource_body RBRACE
+    (9) declaration -> . PREPROCESS ID LBRACE preprocess_body RBRACE
+    (17) declaration -> . LEARNER ID LBRACE learner_body RBRACE
+
+    $end            reduce using rule 1 (program -> declarations .)
+    DATASOURCE      shift and go to state 4
+    PREPROCESS      shift and go to state 5
+    LEARNER         shift and go to state 6
+
+    declaration                    shift and go to state 7
+
+state 3
+
+    (3) declarations -> declaration .
+
+    DATASOURCE      reduce using rule 3 (declarations -> declaration .)
+    PREPROCESS      reduce using rule 3 (declarations -> declaration .)
+    LEARNER         reduce using rule 3 (declarations -> declaration .)
+    $end            reduce using rule 3 (declarations -> declaration .)
+
+
+state 4
+
+    (4) declaration -> DATASOURCE . ID LBRACE datasource_body RBRACE
+
+    ID              shift and go to state 8
+
+
+state 5
+
+    (9) declaration -> PREPROCESS . ID LBRACE preprocess_body RBRACE
+
+    ID              shift and go to state 9
+
+
+state 6
+
+    (17) declaration -> LEARNER . ID LBRACE learner_body RBRACE
+
+    ID              shift and go to state 10
+
+
+state 7
+
+    (2) declarations -> declarations declaration .
+
+    DATASOURCE      reduce using rule 2 (declarations -> declarations declaration .)
+    PREPROCESS      reduce using rule 2 (declarations -> declarations declaration .)
+    LEARNER         reduce using rule 2 (declarations -> declarations declaration .)
+    $end            reduce using rule 2 (declarations -> declarations declaration .)
+
+
+state 8
+
+    (4) declaration -> DATASOURCE ID . LBRACE datasource_body RBRACE
+
+    LBRACE          shift and go to state 11
+
+
+state 9
+
+    (9) declaration -> PREPROCESS ID . LBRACE preprocess_body RBRACE
+
+    LBRACE          shift and go to state 12
+
+
+state 10
+
+    (17) declaration -> LEARNER ID . LBRACE learner_body RBRACE
+
+    LBRACE          shift and go to state 13
+
+
+state 11
+
+    (4) declaration -> DATASOURCE ID LBRACE . datasource_body RBRACE
+    (5) datasource_body -> . datasource_body datasource_field
+    (6) datasource_body -> . datasource_field
+    (7) datasource_field -> . TYPE ID
+    (8) datasource_field -> . LOCATION STRING
+
+    TYPE            shift and go to state 16
+    LOCATION        shift and go to state 17
+
+    datasource_body                shift and go to state 14
+    datasource_field               shift and go to state 15
+
+state 12
+
+    (9) declaration -> PREPROCESS ID LBRACE . preprocess_body RBRACE
+    (10) preprocess_body -> . preprocess_body preprocess_field
+    (11) preprocess_body -> . preprocess_field
+    (12) preprocess_field -> . INPUT ID
+    (13) preprocess_field -> . DROP LBRACKET list_strings RBRACKET
+    (14) preprocess_field -> . IMPUTE ID LBRACKET list_strings RBRACKET
+    (15) preprocess_field -> . SCALE ID LBRACKET list_strings RBRACKET
+    (16) preprocess_field -> . ENCODE ID LBRACKET list_strings RBRACKET
+
+    INPUT           shift and go to state 20
+    DROP            shift and go to state 21
+    IMPUTE          shift and go to state 22
+    SCALE           shift and go to state 23
+    ENCODE          shift and go to state 24
+
+    preprocess_body                shift and go to state 18
+    preprocess_field               shift and go to state 19
+
+state 13
+
+    (17) declaration -> LEARNER ID LBRACE . learner_body RBRACE
+    (18) learner_body -> . learner_body learner_field
+    (19) learner_body -> . learner_field
+    (20) learner_field -> . ALGORITHM ID
+    (21) learner_field -> . PARAMETERS LBRACE learner_parameter_body RBRACE
+
+    ALGORITHM       shift and go to state 27
+    PARAMETERS      shift and go to state 28
+
+    learner_body                   shift and go to state 25
+    learner_field                  shift and go to state 26
+
+state 14
+
+    (4) declaration -> DATASOURCE ID LBRACE datasource_body . RBRACE
+    (5) datasource_body -> datasource_body . datasource_field
+    (7) datasource_field -> . TYPE ID
+    (8) datasource_field -> . LOCATION STRING
+
+    RBRACE          shift and go to state 29
+    TYPE            shift and go to state 16
+    LOCATION        shift and go to state 17
+
+    datasource_field               shift and go to state 30
+
+state 15
+
+    (6) datasource_body -> datasource_field .
+
+    RBRACE          reduce using rule 6 (datasource_body -> datasource_field .)
+    TYPE            reduce using rule 6 (datasource_body -> datasource_field .)
+    LOCATION        reduce using rule 6 (datasource_body -> datasource_field .)
+
+
+state 16
+
+    (7) datasource_field -> TYPE . ID
+
+    ID              shift and go to state 31
+
+
+state 17
+
+    (8) datasource_field -> LOCATION . STRING
+
+    STRING          shift and go to state 32
+
+
+state 18
+
+    (9) declaration -> PREPROCESS ID LBRACE preprocess_body . RBRACE
+    (10) preprocess_body -> preprocess_body . preprocess_field
+    (12) preprocess_field -> . INPUT ID
+    (13) preprocess_field -> . DROP LBRACKET list_strings RBRACKET
+    (14) preprocess_field -> . IMPUTE ID LBRACKET list_strings RBRACKET
+    (15) preprocess_field -> . SCALE ID LBRACKET list_strings RBRACKET
+    (16) preprocess_field -> . ENCODE ID LBRACKET list_strings RBRACKET
+
+    RBRACE          shift and go to state 33
+    INPUT           shift and go to state 20
+    DROP            shift and go to state 21
+    IMPUTE          shift and go to state 22
+    SCALE           shift and go to state 23
+    ENCODE          shift and go to state 24
+
+    preprocess_field               shift and go to state 34
+
+state 19
+
+    (11) preprocess_body -> preprocess_field .
+
+    RBRACE          reduce using rule 11 (preprocess_body -> preprocess_field .)
+    INPUT           reduce using rule 11 (preprocess_body -> preprocess_field .)
+    DROP            reduce using rule 11 (preprocess_body -> preprocess_field .)
+    IMPUTE          reduce using rule 11 (preprocess_body -> preprocess_field .)
+    SCALE           reduce using rule 11 (preprocess_body -> preprocess_field .)
+    ENCODE          reduce using rule 11 (preprocess_body -> preprocess_field .)
+
+
+state 20
+
+    (12) preprocess_field -> INPUT . ID
+
+    ID              shift and go to state 35
+
+
+state 21
+
+    (13) preprocess_field -> DROP . LBRACKET list_strings RBRACKET
+
+    LBRACKET        shift and go to state 36
+
+
+state 22
+
+    (14) preprocess_field -> IMPUTE . ID LBRACKET list_strings RBRACKET
+
+    ID              shift and go to state 37
+
+
+state 23
+
+    (15) preprocess_field -> SCALE . ID LBRACKET list_strings RBRACKET
+
+    ID              shift and go to state 38
+
+
+state 24
+
+    (16) preprocess_field -> ENCODE . ID LBRACKET list_strings RBRACKET
+
+    ID              shift and go to state 39
+
+
+state 25
+
+    (17) declaration -> LEARNER ID LBRACE learner_body . RBRACE
+    (18) learner_body -> learner_body . learner_field
+    (20) learner_field -> . ALGORITHM ID
+    (21) learner_field -> . PARAMETERS LBRACE learner_parameter_body RBRACE
+
+    RBRACE          shift and go to state 40
+    ALGORITHM       shift and go to state 27
+    PARAMETERS      shift and go to state 28
+
+    learner_field                  shift and go to state 41
+
+state 26
+
+    (19) learner_body -> learner_field .
+
+    RBRACE          reduce using rule 19 (learner_body -> learner_field .)
+    ALGORITHM       reduce using rule 19 (learner_body -> learner_field .)
+    PARAMETERS      reduce using rule 19 (learner_body -> learner_field .)
+
+
+state 27
+
+    (20) learner_field -> ALGORITHM . ID
+
+    ID              shift and go to state 42
+
+
+state 28
+
+    (21) learner_field -> PARAMETERS . LBRACE learner_parameter_body RBRACE
+
+    LBRACE          shift and go to state 43
+
+
+state 29
+
+    (4) declaration -> DATASOURCE ID LBRACE datasource_body RBRACE .
+
+    DATASOURCE      reduce using rule 4 (declaration -> DATASOURCE ID LBRACE datasource_body RBRACE .)
+    PREPROCESS      reduce using rule 4 (declaration -> DATASOURCE ID LBRACE datasource_body RBRACE .)
+    LEARNER         reduce using rule 4 (declaration -> DATASOURCE ID LBRACE datasource_body RBRACE .)
+    $end            reduce using rule 4 (declaration -> DATASOURCE ID LBRACE datasource_body RBRACE .)
+
+
+state 30
+
+    (5) datasource_body -> datasource_body datasource_field .
+
+    RBRACE          reduce using rule 5 (datasource_body -> datasource_body datasource_field .)
+    TYPE            reduce using rule 5 (datasource_body -> datasource_body datasource_field .)
+    LOCATION        reduce using rule 5 (datasource_body -> datasource_body datasource_field .)
+
+
+state 31
+
+    (7) datasource_field -> TYPE ID .
+
+    RBRACE          reduce using rule 7 (datasource_field -> TYPE ID .)
+    TYPE            reduce using rule 7 (datasource_field -> TYPE ID .)
+    LOCATION        reduce using rule 7 (datasource_field -> TYPE ID .)
+
+
+state 32
+
+    (8) datasource_field -> LOCATION STRING .
+
+    RBRACE          reduce using rule 8 (datasource_field -> LOCATION STRING .)
+    TYPE            reduce using rule 8 (datasource_field -> LOCATION STRING .)
+    LOCATION        reduce using rule 8 (datasource_field -> LOCATION STRING .)
+
+
+state 33
+
+    (9) declaration -> PREPROCESS ID LBRACE preprocess_body RBRACE .
+
+    DATASOURCE      reduce using rule 9 (declaration -> PREPROCESS ID LBRACE preprocess_body RBRACE .)
+    PREPROCESS      reduce using rule 9 (declaration -> PREPROCESS ID LBRACE preprocess_body RBRACE .)
+    LEARNER         reduce using rule 9 (declaration -> PREPROCESS ID LBRACE preprocess_body RBRACE .)
+    $end            reduce using rule 9 (declaration -> PREPROCESS ID LBRACE preprocess_body RBRACE .)
+
+
+state 34
+
+    (10) preprocess_body -> preprocess_body preprocess_field .
+
+    RBRACE          reduce using rule 10 (preprocess_body -> preprocess_body preprocess_field .)
+    INPUT           reduce using rule 10 (preprocess_body -> preprocess_body preprocess_field .)
+    DROP            reduce using rule 10 (preprocess_body -> preprocess_body preprocess_field .)
+    IMPUTE          reduce using rule 10 (preprocess_body -> preprocess_body preprocess_field .)
+    SCALE           reduce using rule 10 (preprocess_body -> preprocess_body preprocess_field .)
+    ENCODE          reduce using rule 10 (preprocess_body -> preprocess_body preprocess_field .)
+
+
+state 35
+
+    (12) preprocess_field -> INPUT ID .
+
+    RBRACE          reduce using rule 12 (preprocess_field -> INPUT ID .)
+    INPUT           reduce using rule 12 (preprocess_field -> INPUT ID .)
+    DROP            reduce using rule 12 (preprocess_field -> INPUT ID .)
+    IMPUTE          reduce using rule 12 (preprocess_field -> INPUT ID .)
+    SCALE           reduce using rule 12 (preprocess_field -> INPUT ID .)
+    ENCODE          reduce using rule 12 (preprocess_field -> INPUT ID .)
+
+
+state 36
+
+    (13) preprocess_field -> DROP LBRACKET . list_strings RBRACKET
+    (27) list_strings -> . list_strings COMMA STRING
+    (28) list_strings -> . STRING
+
+    STRING          shift and go to state 45
+
+    list_strings                   shift and go to state 44
+
+state 37
+
+    (14) preprocess_field -> IMPUTE ID . LBRACKET list_strings RBRACKET
+
+    LBRACKET        shift and go to state 46
+
+
+state 38
+
+    (15) preprocess_field -> SCALE ID . LBRACKET list_strings RBRACKET
+
+    LBRACKET        shift and go to state 47
+
+
+state 39
+
+    (16) preprocess_field -> ENCODE ID . LBRACKET list_strings RBRACKET
+
+    LBRACKET        shift and go to state 48
+
+
+state 40
+
+    (17) declaration -> LEARNER ID LBRACE learner_body RBRACE .
+
+    DATASOURCE      reduce using rule 17 (declaration -> LEARNER ID LBRACE learner_body RBRACE .)
+    PREPROCESS      reduce using rule 17 (declaration -> LEARNER ID LBRACE learner_body RBRACE .)
+    LEARNER         reduce using rule 17 (declaration -> LEARNER ID LBRACE learner_body RBRACE .)
+    $end            reduce using rule 17 (declaration -> LEARNER ID LBRACE learner_body RBRACE .)
+
+
+state 41
+
+    (18) learner_body -> learner_body learner_field .
+
+    RBRACE          reduce using rule 18 (learner_body -> learner_body learner_field .)
+    ALGORITHM       reduce using rule 18 (learner_body -> learner_body learner_field .)
+    PARAMETERS      reduce using rule 18 (learner_body -> learner_body learner_field .)
+
+
+state 42
+
+    (20) learner_field -> ALGORITHM ID .
+
+    RBRACE          reduce using rule 20 (learner_field -> ALGORITHM ID .)
+    ALGORITHM       reduce using rule 20 (learner_field -> ALGORITHM ID .)
+    PARAMETERS      reduce using rule 20 (learner_field -> ALGORITHM ID .)
+
+
+state 43
+
+    (21) learner_field -> PARAMETERS LBRACE . learner_parameter_body RBRACE
+    (22) learner_parameter_body -> . learner_parameter_body learner_parameter_field
+    (23) learner_parameter_body -> . learner_parameter_field
+    (24) learner_parameter_field -> . ID EQUALS NUMBER
+
+    ID              shift and go to state 51
+
+    learner_parameter_body         shift and go to state 49
+    learner_parameter_field        shift and go to state 50
+
+state 44
+
+    (13) preprocess_field -> DROP LBRACKET list_strings . RBRACKET
+    (27) list_strings -> list_strings . COMMA STRING
+
+    RBRACKET        shift and go to state 52
+    COMMA           shift and go to state 53
+
+
+state 45
+
+    (28) list_strings -> STRING .
+
+    RBRACKET        reduce using rule 28 (list_strings -> STRING .)
+    COMMA           reduce using rule 28 (list_strings -> STRING .)
+
+
+state 46
+
+    (14) preprocess_field -> IMPUTE ID LBRACKET . list_strings RBRACKET
+    (27) list_strings -> . list_strings COMMA STRING
+    (28) list_strings -> . STRING
+
+    STRING          shift and go to state 45
+
+    list_strings                   shift and go to state 54
+
+state 47
+
+    (15) preprocess_field -> SCALE ID LBRACKET . list_strings RBRACKET
+    (27) list_strings -> . list_strings COMMA STRING
+    (28) list_strings -> . STRING
+
+    STRING          shift and go to state 45
+
+    list_strings                   shift and go to state 55
+
+state 48
+
+    (16) preprocess_field -> ENCODE ID LBRACKET . list_strings RBRACKET
+    (27) list_strings -> . list_strings COMMA STRING
+    (28) list_strings -> . STRING
+
+    STRING          shift and go to state 45
+
+    list_strings                   shift and go to state 56
+
+state 49
+
+    (21) learner_field -> PARAMETERS LBRACE learner_parameter_body . RBRACE
+    (22) learner_parameter_body -> learner_parameter_body . learner_parameter_field
+    (24) learner_parameter_field -> . ID EQUALS NUMBER
+
+    RBRACE          shift and go to state 57
+    ID              shift and go to state 51
+
+    learner_parameter_field        shift and go to state 58
+
+state 50
+
+    (23) learner_parameter_body -> learner_parameter_field .
+
+    RBRACE          reduce using rule 23 (learner_parameter_body -> learner_parameter_field .)
+    ID              reduce using rule 23 (learner_parameter_body -> learner_parameter_field .)
+
+
+state 51
+
+    (24) learner_parameter_field -> ID . EQUALS NUMBER
+
+    EQUALS          shift and go to state 59
+
+
+state 52
+
+    (13) preprocess_field -> DROP LBRACKET list_strings RBRACKET .
+
+    RBRACE          reduce using rule 13 (preprocess_field -> DROP LBRACKET list_strings RBRACKET .)
+    INPUT           reduce using rule 13 (preprocess_field -> DROP LBRACKET list_strings RBRACKET .)
+    DROP            reduce using rule 13 (preprocess_field -> DROP LBRACKET list_strings RBRACKET .)
+    IMPUTE          reduce using rule 13 (preprocess_field -> DROP LBRACKET list_strings RBRACKET .)
+    SCALE           reduce using rule 13 (preprocess_field -> DROP LBRACKET list_strings RBRACKET .)
+    ENCODE          reduce using rule 13 (preprocess_field -> DROP LBRACKET list_strings RBRACKET .)
+
+
+state 53
+
+    (27) list_strings -> list_strings COMMA . STRING
+
+    STRING          shift and go to state 60
+
+
+state 54
+
+    (14) preprocess_field -> IMPUTE ID LBRACKET list_strings . RBRACKET
+    (27) list_strings -> list_strings . COMMA STRING
+
+    RBRACKET        shift and go to state 61
+    COMMA           shift and go to state 53
+
+
+state 55
+
+    (15) preprocess_field -> SCALE ID LBRACKET list_strings . RBRACKET
+    (27) list_strings -> list_strings . COMMA STRING
+
+    RBRACKET        shift and go to state 62
+    COMMA           shift and go to state 53
+
+
+state 56
+
+    (16) preprocess_field -> ENCODE ID LBRACKET list_strings . RBRACKET
+    (27) list_strings -> list_strings . COMMA STRING
+
+    RBRACKET        shift and go to state 63
+    COMMA           shift and go to state 53
+
+
+state 57
+
+    (21) learner_field -> PARAMETERS LBRACE learner_parameter_body RBRACE .
+
+    RBRACE          reduce using rule 21 (learner_field -> PARAMETERS LBRACE learner_parameter_body RBRACE .)
+    ALGORITHM       reduce using rule 21 (learner_field -> PARAMETERS LBRACE learner_parameter_body RBRACE .)
+    PARAMETERS      reduce using rule 21 (learner_field -> PARAMETERS LBRACE learner_parameter_body RBRACE .)
+
+
+state 58
+
+    (22) learner_parameter_body -> learner_parameter_body learner_parameter_field .
+
+    RBRACE          reduce using rule 22 (learner_parameter_body -> learner_parameter_body learner_parameter_field .)
+    ID              reduce using rule 22 (learner_parameter_body -> learner_parameter_body learner_parameter_field .)
+
+
+state 59
+
+    (24) learner_parameter_field -> ID EQUALS . NUMBER
+
+    NUMBER          shift and go to state 64
+
+
+state 60
+
+    (27) list_strings -> list_strings COMMA STRING .
+
+    RBRACKET        reduce using rule 27 (list_strings -> list_strings COMMA STRING .)
+    COMMA           reduce using rule 27 (list_strings -> list_strings COMMA STRING .)
+
+
+state 61
+
+    (14) preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET .
+
+    RBRACE          reduce using rule 14 (preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET .)
+    INPUT           reduce using rule 14 (preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET .)
+    DROP            reduce using rule 14 (preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET .)
+    IMPUTE          reduce using rule 14 (preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET .)
+    SCALE           reduce using rule 14 (preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET .)
+    ENCODE          reduce using rule 14 (preprocess_field -> IMPUTE ID LBRACKET list_strings RBRACKET .)
+
+
+state 62
+
+    (15) preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET .
+
+    RBRACE          reduce using rule 15 (preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET .)
+    INPUT           reduce using rule 15 (preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET .)
+    DROP            reduce using rule 15 (preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET .)
+    IMPUTE          reduce using rule 15 (preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET .)
+    SCALE           reduce using rule 15 (preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET .)
+    ENCODE          reduce using rule 15 (preprocess_field -> SCALE ID LBRACKET list_strings RBRACKET .)
+
+
+state 63
+
+    (16) preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET .
+
+    RBRACE          reduce using rule 16 (preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET .)
+    INPUT           reduce using rule 16 (preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET .)
+    DROP            reduce using rule 16 (preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET .)
+    IMPUTE          reduce using rule 16 (preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET .)
+    SCALE           reduce using rule 16 (preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET .)
+    ENCODE          reduce using rule 16 (preprocess_field -> ENCODE ID LBRACKET list_strings RBRACKET .)
+
+
+state 64
+
+    (24) learner_parameter_field -> ID EQUALS NUMBER .
+
+    RBRACE          reduce using rule 24 (learner_parameter_field -> ID EQUALS NUMBER .)
+    ID              reduce using rule 24 (learner_parameter_field -> ID EQUALS NUMBER .)
+

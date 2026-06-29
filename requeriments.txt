@@ -1,0 +1,4 @@
+ply>=3.11
+
+# Version de python minima : 3.7
+# Necesaria para el uso de las dataclass

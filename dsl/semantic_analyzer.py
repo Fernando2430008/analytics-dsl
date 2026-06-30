@@ -43,15 +43,19 @@ class SemanticAnalyzer():
                 self.validate_learner(declaration)
 
     def validate_datasource(self, declaration):
-        field_names = []
+        field_names = {}
+        supported_types = ["txt"]
+
         for field in declaration.fields:
             if field.name in field_names:
                 raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
-            field_names.append(field.name)
+            field_names["field.name"] = field.value
         
         if not "type" in field_names: 
             raise DSLValidationError(f"El tipo de dato no fue incluido")
-        elif not "location" in field_names: 
+        if field_names["type"] not in supported_types:
+            raise DSLValidationError(f"Tipo de dato '{field_names['type']}' no soportado")
+        if not "location" in field_names: 
             raise DSLValidationError(f"La ubicacion de el archivo no fue incluida")
         
     def validate_preprocess(self, declaration):

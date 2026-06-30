@@ -55,23 +55,21 @@ class SemanticAnalyzer():
             raise DSLValidationError(f"La ubicacion de el archivo no fue incluida")
         
     def validate_preprocess(self, declaration):
-        pass
+        field_actions = []
+        input_name = None
+        for fields in declaration.fields:
+            if fields.action in field_actions:
+                raise DSLValidationError(f"El campo '{fields.action}' ya fue incluido")
+            field_actions.append(fields.action)
+
+            if fields.action == "input":
+                input_name = fields.value
+        
+        if input_name is None:
+            raise DSLValidationError(f"El campo input debe ser incluido")
+        
+        if not input_name in self.symbols:
+            raise DSLValidationError(f"El datasource '{input_name}' no existe")
 
     def validate_learner(self, declaration):
         pass
-
-
-
-''' # Validacion de campos en datasource 
-if not "type" in p[4]: 
-    raise DSLValidationError(f"El tipo de dato no fue incluido")
-elif not "location" in p[4]: 
-    raise DSLValidationError(f"La ubicacion de el archivo no fue incluida")
-'''
-
-'''     # Verificar que los fields de el datasource no este en la lista actuals
-        if field_name in p[1]:
-            raise DSLValidationError(
-                f"El campo '{field_name}' esta duplicado en el datasource."
-            )
-        '''

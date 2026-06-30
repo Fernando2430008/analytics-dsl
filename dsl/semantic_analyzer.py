@@ -44,10 +44,10 @@ class SemanticAnalyzer():
 
     def validate_datasource(self, declaration):
         field_names = []
-        for fields in declaration.fields:
-            if fields.name in field_names:
-                raise DSLValidationError(f"El campo '{fields.name}' ya fue incluido")
-            field_names.append(fields.name)
+        for field in declaration.fields:
+            if field.name in field_names:
+                raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
+            field_names.append(field.name)
         
         if not "type" in field_names: 
             raise DSLValidationError(f"El tipo de dato no fue incluido")
@@ -57,13 +57,13 @@ class SemanticAnalyzer():
     def validate_preprocess(self, declaration):
         field_actions = []
         input_name = None
-        for fields in declaration.fields:
-            if fields.action in field_actions:
-                raise DSLValidationError(f"El campo '{fields.action}' ya fue incluido")
-            field_actions.append(fields.action)
+        for field in declaration.fields:
+            if field.action in field_actions:
+                raise DSLValidationError(f"El campo '{field.action}' ya fue incluido")
+            field_actions.append(field.action)
 
-            if fields.action == "input":
-                input_name = fields.value
+            if field.action == "input":
+                input_name = field.value
         
         if input_name is None:
             raise DSLValidationError(f"El campo input debe ser incluido")

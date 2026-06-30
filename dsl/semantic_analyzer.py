@@ -49,7 +49,7 @@ class SemanticAnalyzer():
         for field in declaration.fields:
             if field.name in field_names:
                 raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
-            field_names["field.name"] = field.value
+            field_names[field.name] = field.value
         
         if not "type" in field_names: 
             raise DSLValidationError(f"El tipo de dato no fue incluido")

@@ -261,7 +261,7 @@ class LexerParser:
     ################################################
     #####            predict                   #####
     ################################################
-    #####            no sabo                   #####
+    #####           Extra rules                #####
     def p_value_bool(self, p):
         """value : TRUE
                 | FALSE"""

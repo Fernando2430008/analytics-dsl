@@ -19,5 +19,4 @@ class DataSource:
                 contenido = archivo.read()
                 return contenido
         
-        raise DSLValidationError(f"Tipo de dato '{self.type}' no soportado")
 

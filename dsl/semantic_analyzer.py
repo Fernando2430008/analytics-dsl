@@ -44,7 +44,7 @@ class SemanticAnalyzer():
 
     def validate_datasource(self, declaration):
         field_names = {}
-        supported_types = ["txt"]
+        supported_types = ["txt", "csv"]
 
         for field in declaration.fields:
             if field.name in field_names:

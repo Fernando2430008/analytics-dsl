@@ -1,9 +1,9 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-from dsl.errors import DSLValidationError, DSLSyntaxError
 from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode
 from dsl.semantic_analyzer import SemanticAnalyzer
+from dsl.Executor import Interpreter
 
 class LexerParser:
     reserved = {
@@ -296,6 +296,8 @@ class LexerParser:
         ast = self.parser.parse(code_string, lexer = self.lexer)
         semantic_analyzer = SemanticAnalyzer()
         semantic_analyzer.analyze(ast)
+        interpreter = Interpreter()
+        interpreter.execute(ast)
         return ast
     
     # Funcion unicamente para probar el analizador

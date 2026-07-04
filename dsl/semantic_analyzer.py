@@ -59,21 +59,47 @@ class SemanticAnalyzer():
             raise DSLValidationError(f"La ubicacion de el archivo no fue incluida")
         
     def validate_preprocess(self, declaration):
-        field_actions = []
+        drop_list = []
+        impute_list = []
+        scale_list = []
+        encode_list = []
         input_name = None
         for field in declaration.fields:
-            if field.action in field_actions:
-                raise DSLValidationError(f"El campo '{field.action}' ya fue incluido")
-            field_actions.append(field.action)
-
             if field.action == "input":
+                if input_name is not None:
+                    raise DSLValidationError(f"El campo '{field.action}' ya fue incluido")
                 input_name = field.value
+                continue
+            
+            for val in field.value:
+                if field.action == "drop":
+                    if val in drop_list:
+                        raise DSLValidationError(f"La columna '{val}' ya fue incluida en '{field.action}'")
+                    drop_list.append(val)
+
+                elif field.action == "impute":
+                    if val in impute_list:
+                        raise DSLValidationError(f"La columna '{val}' ya fue incluida en '{field.action}'")
+                    impute_list.append(val)
+
+                elif field.action == "scale":
+                    if val in scale_list:
+                        raise DSLValidationError(f"La columna '{val}' ya fue incluida en '{field.action}'")
+                    scale_list.append(val)
+
+                elif field.action == "encode":
+                    if val in encode_list:
+                        raise DSLValidationError(f"La columna '{val}' ya fue incluida en '{field.action}'")
+                    encode_list.append(val)
         
         if input_name is None:
             raise DSLValidationError(f"El campo input debe ser incluido")
         
         if not input_name in self.symbols:
             raise DSLValidationError(f"El datasource '{input_name}' no existe")
+        
+        if self.symbols[input_name]["kind"] != "datasource":
+            raise DSLValidationError(f"'{input_name}' no es un datasource")
 
     def validate_learner(self, declaration):
         field_names = []

@@ -11,7 +11,9 @@ class Interpreter:
         for declaration in program.declarations:
             if isinstance(declaration, DataSourceNode):
                 self.execute_datasource(declaration)
-            elif isinstance(declaration, PreprocessNode):
+            
+        for declaration in program.declarations:
+            if isinstance(declaration, PreprocessNode):
                 self.execute_preprocess(declaration)
     
     def execute_datasource(self, declaration):

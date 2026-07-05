@@ -136,18 +136,18 @@ class SemanticAnalyzer():
         if algorithm_value == "random_forest":
             allowed_fields = ["trees", "depth"]
 
-            for field in field_names:
-                if field not in allowed_fields:
-                    raise DSLValidationError(f"El campo '{field}' no esta permitido en el algoritmo '{algorithm_value}'")
+        for field in field_names:
+            if field not in allowed_fields:
+                raise DSLValidationError(f"El campo '{field}' no esta permitido en el algoritmo '{algorithm_value}'")
 
-            if "trees" in field_names:
-                if not isinstance(field_names["trees"], int):
-                    raise DSLValidationError(f"El valor de 'trees' debe ser un entero")
-                if field_names["trees"] <= 0:
-                    raise DSLValidationError(f"El valor de 'trees' debe ser mayor a cero")
-            if "depth" in field_names:
-                if not isinstance(field_names["depth"], int):
-                    raise DSLValidationError(f"El valor de 'depth' debe ser un entero")
-                if field_names["depth"] <= 0:
-                    raise DSLValidationError(f"El valor de 'depth' debe ser mayor a cero")
-                
+        if "trees" in field_names:
+            if not isinstance(field_names["trees"], int):
+                raise DSLValidationError(f"El valor de 'trees' debe ser un entero")
+            if field_names["trees"] <= 0:
+                raise DSLValidationError(f"El valor de 'trees' debe ser mayor a cero")
+        if "depth" in field_names:
+            if not isinstance(field_names["depth"], int):
+                raise DSLValidationError(f"El valor de 'depth' debe ser un entero")
+            if field_names["depth"] <= 0:
+                raise DSLValidationError(f"El valor de 'depth' debe ser mayor a cero")
+            

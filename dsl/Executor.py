@@ -51,6 +51,7 @@ class Interpreter:
                     method = field.type,
                     columns = field.value
                 )
+                
             if field.action != "input":
                 operations.append(operation)
         
@@ -65,6 +66,8 @@ class Interpreter:
         for op in operations:
             if op.action == "drop":
                 data = preprocess.drop_operation(op, data)
+            elif op.action == "impute":
+                data = preprocess.impute_operation(op,data)
 
         self.environment[declaration.name] = data
 

@@ -68,6 +68,8 @@ class Interpreter:
                 data = preprocess.drop_operation(op, data)
             elif op.action == "impute":
                 data = preprocess.impute_operation(op,data)
+            elif op.action == "scale":
+                data = preprocess.scale_operation(op,data)
 
         self.environment[declaration.name] = data
 

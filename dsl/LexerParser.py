@@ -58,6 +58,8 @@ class LexerParser:
         # Inicializar el lex y yacc
         self.lexer = lex.lex(module=self)
         self.parser = yacc.yacc(module=self)
+        self.semantic_analyzer = SemanticAnalyzer()
+        self.interpreter = Interpreter()
     
     ###############################################
     #               Reglas lexicas                #
@@ -294,10 +296,8 @@ class LexerParser:
 
     def parse(self, code_string):
         ast = self.parser.parse(code_string, lexer = self.lexer)
-        semantic_analyzer = SemanticAnalyzer()
-        semantic_analyzer.analyze(ast)
-        interpreter = Interpreter()
-        interpreter.execute(ast)
+        self.semantic_analyzer.analyze(ast)
+        self.interpreter.execute(ast)
         return ast
     
     # Funcion unicamente para probar el analizador

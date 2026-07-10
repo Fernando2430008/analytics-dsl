@@ -22,15 +22,22 @@ class Preprocess:
         for column in operation.columns:
             if column not in data.columns:
                 raise DSLValidationError(f"La columna '{column}' no se encuentra en el datasource")
+            
+            if not pd.api.types.is_numeric_dtype(data[column]):
+                raise DSLValidationError(f"La columna '{column}' debe ser numerica para aplicar impute")
 
             if operation.method == "mean":
                 data[column] = data[column].fillna(data[column].mean()) # media
+
             elif operation.method == "median":
                 data[column] = data[column].fillna(data[column].median()) # mediana
+
             elif operation.method == "mode":
                 data[column] = data[column].fillna(data[column].mode()[0]) # moda
+
             else:
                 raise DSLValidationError(f"Tipo de imputacion '{operation.method}' no soportado")
+            
         return data
     
     def scale_operation(self, operation, data):
@@ -112,7 +119,7 @@ class Preprocess:
             elif operation.method == "frequency":
                 absolute_frequency = data[column].value_counts().to_dict()
                 data[column] = data[column].map(absolute_frequency)
-                
+
             else:
                 raise DSLValidationError(f"Metodo de codificacion '{operation.method}' no soportado")
 

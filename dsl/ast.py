@@ -57,5 +57,3 @@ class LearnerParametersNode():
 class ParameterAssignmentNode():
     name:str
     value:Any
-
-    #hola como estas pr

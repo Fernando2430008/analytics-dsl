@@ -23,13 +23,16 @@ class Preprocess:
             if column not in data.columns:
                 raise DSLValidationError(f"La columna '{column}' no se encuentra en el datasource")
             
-            if not pd.api.types.is_numeric_dtype(data[column]):
-                raise DSLValidationError(f"La columna '{column}' debe ser numerica para aplicar impute")
-
             if operation.method == "mean":
+                if not pd.api.types.is_numeric_dtype(data[column]):
+                    raise DSLValidationError(f"La columna '{column}' debe ser numerica para aplicar impute mean")
+
                 data[column] = data[column].fillna(data[column].mean()) # media
 
             elif operation.method == "median":
+                if not pd.api.types.is_numeric_dtype(data[column]):
+                    raise DSLValidationError(f"La columna '{column}' debe ser numerica para aplicar impute median")
+
                 data[column] = data[column].fillna(data[column].median()) # mediana
 
             elif operation.method == "mode":

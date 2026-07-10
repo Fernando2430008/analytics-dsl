@@ -57,3 +57,17 @@ class LearnerParametersNode():
 class ParameterAssignmentNode():
     name:str
     value:Any
+
+
+###########################
+#  Clases de model        #
+
+@dataclass
+class ModelNode():
+    name:str
+    fields:list
+
+@dataclass 
+class ModelFieldNode():
+    name:str
+    value:str

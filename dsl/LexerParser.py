@@ -1,7 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode
+from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode
 from dsl.semantic_analyzer import SemanticAnalyzer
 from dsl.Executor import Interpreter
 
@@ -258,6 +258,41 @@ class LexerParser:
 
     ################################################
     #####            model                     #####
+    def p_declaration_model(self, p):
+        """declaration : MODEL ID LBRACE model_body RBRACE"""
+        p[0] = ModelNode (
+            name = p[2],
+            fields = p[4]
+        )
+    
+    def p_model_body_multiple(self, p):
+        """model_body : model_body model_field"""
+        p[0] = p[1] + [p[2]]
+    
+    def p_model_body_single(self, p):
+        """model_body : model_field"""
+        p[0] = [p[1]]
+    
+    def p_model_field_fit(self, p):
+        """model_field : FIT ID"""
+        p[0] = ModelFieldNode (
+            name = p[1],
+            value = p[2]
+        )
+    
+    def p_model_field_using(self, p):
+        """model_field : USING ID"""
+        p[0] = ModelFieldNode (
+            name = p[1],
+            value = p[2]
+        )
+    
+    def p_model_field_target(self, p):
+        """model_field : TARGET ID"""
+        p[0] = ModelFieldNode (
+            name = p[1],
+            value = p[2]
+        )
     ################################################
     #####            evaluate                  #####
     ################################################

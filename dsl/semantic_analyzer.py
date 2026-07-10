@@ -1,4 +1,4 @@
-from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, LearnerParametersNode
+from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, LearnerParametersNode, ModelNode
 from dsl.errors import DSLValidationError
 
 class SemanticAnalyzer():
@@ -32,6 +32,12 @@ class SemanticAnalyzer():
                     "kind" : "learner",
                     "node" : declaration
                 }
+            
+            elif isinstance(declaration, ModelNode):
+                self.symbols[declaration.name] = {
+                    "kind" : "model",
+                    "node" : declaration
+                }
 
     def validate_declarations(self, program: ProgramNode):
         for declaration in program.declarations:
@@ -41,6 +47,8 @@ class SemanticAnalyzer():
                 self.validate_preprocess(declaration)
             elif isinstance(declaration, LearnerNode):
                 self.validate_learner(declaration)
+            elif isinstance(declaration, ModelNode):
+                self.validate_model(declaration)
 
     def validate_datasource(self, declaration):
         field_names = {}
@@ -151,3 +159,37 @@ class SemanticAnalyzer():
             if field_names["depth"] <= 0:
                 raise DSLValidationError(f"El valor de 'depth' debe ser mayor a cero")
             
+    def validate_model(self, declaration):
+        field_names = {}
+
+        for field in declaration.fields:
+            if field.name in field_names:
+                raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
+            field_names[field.name] = field.value
+        
+        required_fields = ["fit", "using", "target"]
+
+        for required in required_fields:
+            if required not in field_names:
+                raise DSLValidationError(f"El campo '{required}' debe ser incluido en el model")
+
+        learner_name = field_names["fit"]
+        using_name = field_names["using"]
+        target_name = field_names["target"]
+
+        if learner_name not in self.symbols:
+            raise DSLValidationError(f"El learner '{learner_name}' no existe")
+
+        if self.symbols[learner_name]["kind"] != "learner":
+            raise DSLValidationError(f"'{learner_name}' no es un learner")
+
+        if using_name not in self.symbols:
+            raise DSLValidationError(f"El datasource o preprocess '{using_name}' no existe")
+
+        if self.symbols[using_name]["kind"] not in ["datasource", "preprocess"]:
+            raise DSLValidationError(f"'{using_name}' no es un datasource ni un preprocess")
+
+        if not isinstance(target_name, str):
+            raise DSLValidationError("El target debe ser el nombre de una columna")
+            
+        

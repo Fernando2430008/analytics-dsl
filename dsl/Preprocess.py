@@ -88,6 +88,35 @@ class Preprocess:
                 raise DSLValidationError(f"Metodo de escalado '{operation.method}' no soportado")
             
         return data
+    
+    def encode_operation(self, operation, data):
+        data = data.copy()
+
+        for column in operation.columns:
+            if column not in data.columns:
+                raise DSLValidationError(f"La columna '{column}' no se encuentra en el datasource")
+            
+            if operation.method == "onehot":
+                column_index = data.columns.get_loc(column)
+                dummies = pd.get_dummies(data[column], prefix = column, dtype = int)
+                data = data.drop(columns = [column])
+                for i, dummy_column in enumerate(dummies.columns):
+                    data.insert(column_index + i, dummy_column, dummies[dummy_column])
+
+            elif operation.method == "label":
+                data[column] = data[column].astype("category").cat.codes
+
+            #elif operation.method == "ordinal":
+                #pass
+
+            elif operation.method == "frequency":
+                absolute_frequency = data[column].value_counts().to_dict()
+                data[column] = data[column].map(absolute_frequency)
+                
+            else:
+                raise DSLValidationError(f"Metodo de codificacion '{operation.method}' no soportado")
+
+        return data
 
 
 @dataclass

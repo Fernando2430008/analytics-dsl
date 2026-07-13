@@ -1,8 +1,9 @@
-from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode
+from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, ModelNode
 
 from dsl.DataSource import DataSource
 from dsl.Preprocess import Preprocess, PreprocessOperation
 from dsl.Learner import Learner, LearnerParameter
+from dsl.Model import Model
 
 class Interpreter:
     def __init__(self):
@@ -20,6 +21,10 @@ class Interpreter:
         for declaration in program.declarations:
             if isinstance(declaration, LearnerNode):
                 self.execute_learner(declaration)
+        
+        for declaration in program.declarations:
+            if isinstance(declaration, ModelNode):
+                self.execute_model(declaration)
     
     def execute_datasource(self, declaration):
         fields = {}
@@ -104,5 +109,26 @@ class Interpreter:
         )
 
         self.environment[declaration.name] = learner
+    
+    def execute_model(self, declaration):
+        model_dict = {}
 
+        for field in declaration.fields:
+            model_dict[field.name] = field.value
+        
+        model = Model (
+            name = declaration.name,
+            learner = self.environment[model_dict["fit"]],
+            data = self.environment[model_dict["using"]],
+            target = model_dict["target"]
+        )
+
+        params = model.learner.get_parameters_dict()
+
+        algorithm = model.create_algorithm(params)
+        x,y = model.prepare_data()
+        model.train(algorithm, x, y)
+
+        self.environment[declaration.name] = model
+        
 

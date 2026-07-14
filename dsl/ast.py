@@ -71,3 +71,27 @@ class ModelNode():
 class ModelFieldNode():
     name:str
     value:str
+
+###########################
+#  Clases de evaluate     #
+
+@dataclass
+class EvaluateNode():
+    name:str
+    fields:list
+
+@dataclass
+class EvaluateFieldNode():
+    name:str
+    value:Any
+
+@dataclass
+class EvaluateSplitNode():
+    name:str
+    type:str
+    fields:list
+
+@dataclass
+class SplitAssignmentNode():
+    name:str
+    value:Any

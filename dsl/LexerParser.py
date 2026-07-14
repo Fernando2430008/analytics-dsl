@@ -1,7 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode
+from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode, EvaluateNode, EvaluateFieldNode, EvaluateSplitNode, SplitAssignmentNode
 from dsl.semantic_analyzer import SemanticAnalyzer
 from dsl.Executor import Interpreter
 
@@ -234,7 +234,7 @@ class LexerParser:
             value = p[2]
         )
     
-    def p_learner_parameter_body_fild(self, p):
+    def p_learner_parameter_body_field(self, p):
         """learner_field : PARAMETERS LBRACE learner_parameter_body RBRACE"""
         p[0] = LearnerParametersNode(
             name = p[1],
@@ -295,6 +295,75 @@ class LexerParser:
         )
     ################################################
     #####            evaluate                  #####
+    def p_declaration_evaluate (self, p):
+        """declaration : EVALUATE ID LBRACE evaluate_body RBRACE"""
+        p[0] = EvaluateNode (
+            name = p[2],
+            fields = p[4]
+        )
+    
+    def p_evaluate_body_multiple (self, p):
+        """evaluate_body : evaluate_body evaluate_field"""
+        p[0] = p[1] + [p[2]]
+    
+    def p_evaluate_body_single (self, p):
+        """evaluate_body : evaluate_field"""
+        p[0] = [p[1]]
+    
+    def p_evaluate_field_models(self, p):
+        """evaluate_field : MODEL ID"""
+        p[0] = EvaluateFieldNode (
+            name = p[1],
+            value = p[2]
+        )
+
+    def p_evaluate_field_datasource (self, p):
+        """evaluate_field : DATASOURCE ID"""
+        p[0] = EvaluateFieldNode (
+            name = p[1],
+            value = p[2]
+        )
+    
+    def p_evaluate_split_body_field(self, p):
+        """evaluate_field : SPLIT ID LBRACE evaluate_split_body RBRACE"""
+        p[0] = EvaluateSplitNode (
+            name = p[1],
+            type = p[2],
+            fields = p[4]
+        )
+    
+    def p_evaluate_split_body_multiple (self, p):
+        """evaluate_split_body : evaluate_split_body evaluate_split_field"""
+        p[0] = p[1] + [p[2]]
+    
+    def p_evaluate_split_body_single(self, p):
+        """evaluate_split_body : evaluate_split_field"""
+        p[0] = [p[1]]
+    
+    def p_evaluate_split_field_number(self, p):
+        """evaluate_split_field : TRAIN NUMBER
+                                | TEST NUMBER
+                                | FOLDS NUMBER
+                                | RANDOM_STATE NUMBER"""
+        p[0] = SplitAssignmentNode(
+            name = p[1],
+            value = p[2]
+        )
+
+    def p_evaluate_split_field_stratify(self, p):
+        """evaluate_split_field : STRATIFY value"""
+        p[0] = SplitAssignmentNode(
+            name = p[1],
+            value = p[2]
+        )
+    
+    def p_evaluate_field_metrics (self, p):
+        """evaluate_field : METRICS LBRACKET id_list RBRACKET"""
+        p[0] = EvaluateFieldNode (
+            name = p[1],
+            value = p[3]
+        )
+
     ################################################
     #####            predict                   #####
     ################################################
@@ -302,15 +371,19 @@ class LexerParser:
     def p_value_bool(self, p):
         """value : TRUE
                 | FALSE"""
-        if p[1] == "true":
-            p[0] = "TRUE"
-        else:
-            "FALSE"
-            p[0] = "FALSE"
+        p[0] = p[1] == "true"
     
     def p_string_list(self, p):
         """list_strings : list_strings COMMA STRING
                         | STRING"""
+        if len(p) == 2:
+            p[0] = [p[1]]
+        else:
+            p[0] = p[1] + [p[3]]
+    
+    def p_id_list (self, p):
+        """id_list : id_list COMMA ID
+                    | ID"""
         if len(p) == 2:
             p[0] = [p[1]]
         else:

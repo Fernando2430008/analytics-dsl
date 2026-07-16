@@ -1,4 +1,4 @@
-from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, LearnerParametersNode, ModelNode
+from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, ModelNode, EvaluateNode, EvaluateSplitNode
 from dsl.errors import DSLValidationError
 
 class SemanticAnalyzer():
@@ -38,6 +38,12 @@ class SemanticAnalyzer():
                     "kind" : "model",
                     "node" : declaration
                 }
+            
+            elif isinstance (declaration, EvaluateNode):
+                self.symbols[declaration.name] = {
+                    "kind" : "evaluate",
+                    "node" : declaration
+                }
 
     def validate_declarations(self, program: ProgramNode):
         for declaration in program.declarations:
@@ -49,6 +55,8 @@ class SemanticAnalyzer():
                 self.validate_learner(declaration)
             elif isinstance(declaration, ModelNode):
                 self.validate_model(declaration)
+            elif isinstance(declaration, EvaluateNode):
+                self.validate_evaluate(declaration)
 
     def validate_datasource(self, declaration):
         field_names = {}
@@ -192,4 +200,67 @@ class SemanticAnalyzer():
         if not isinstance(target_name, str):
             raise DSLValidationError("El target debe ser el nombre de una columna")
             
+    def validate_evaluate(self, declaration):
+        fields = {}
+
+        for field in declaration.fields:
+            if field.name in fields:
+                raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
+            
+            if isinstance(field, EvaluateSplitNode):
+                fields[field.name] = "split"
+                self.validate_split(field)
+
+            else:
+                fields[field.name] = field.value
         
+        required_fields = ["model", "datasource", "split", "metrics"]
+
+        for field in required_fields:
+            if field not in fields:
+                raise DSLValidationError(f"El campo '{field}' debe ser incluido en 'evaluate'")
+        
+        model_name = fields["model"]
+        datasource_name = fields["datasource"]
+
+        if model_name not in self.symbols:
+            raise DSLValidationError(f"El model '{model_name}' no existe")
+        
+        if self.symbols[model_name]["kind"] != "model":
+            raise DSLValidationError(f"'{model_name}' no es un model")
+        
+        if datasource_name not in self.symbols:
+            raise DSLValidationError(f"El datasource o preprocess '{datasource_name}' no existe")
+        
+        if self.symbols[datasource_name]["kind"] not in ["datasource", "preprocess"]:
+            raise DSLValidationError(f"'{datasource_name}' no es un datasource ni preprocess")
+
+    def validate_split(self, declaration):
+        fields = {}
+
+        for field in declaration.fields:
+            if field.name in fields:
+                raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
+            fields[field.name] = field.value
+        
+        if declaration.type == "cross_validation":
+            allowed_fields = ["folds", "stratify", "random_state"]
+            required_fields = ["folds"]
+
+            for field in fields:
+                if field not in required_fields:
+                    raise DSLValidationError(f"El campo '{field}' no esta permitido en 'cross_validation'")
+            
+            for field in allowed_fields:
+                if field not in fields:
+                    raise DSLValidationError(f"El campo '{field}' debe ser incluido")
+            
+            if not isinstance (fields["folds"], int):
+                raise DSLValidationError (f"El valor de 'folds' debe ser un entero")
+            
+            if fields["folds"] < 2:
+                raise DSLValidationError(f"El valor de 'folds' debe ser igual o mayor a 2")
+        else:
+            raise DSLValidationError(f"'{declaration.type}' aun no permitido")
+
+

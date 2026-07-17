@@ -1,9 +1,10 @@
-from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, ModelNode
+from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, ModelNode, EvaluateNode, EvaluateSplitNode
 
 from dsl.DataSource import DataSource
 from dsl.Preprocess import Preprocess, PreprocessOperation
 from dsl.Learner import Learner, LearnerParameter
 from dsl.Model import Model
+from dsl.Evaluate import Evaluate, Split
 
 class Interpreter:
     def __init__(self):
@@ -25,6 +26,10 @@ class Interpreter:
         for declaration in program.declarations:
             if isinstance(declaration, ModelNode):
                 self.execute_model(declaration)
+        
+        for declaration in program.declarations:
+            if isinstance(declaration, EvaluateNode):
+                self.execute_evaluate(declaration)
     
     def execute_datasource(self, declaration):
         fields = {}
@@ -131,4 +136,34 @@ class Interpreter:
 
         self.environment[declaration.name] = model
         
+    def execute_evaluate(self, declaration):
+        evaluate_dict = {}
+        split_dict = {}
+        type_split = None
+
+        for field in declaration.fields:
+            if isinstance (field, EvaluateSplitNode):
+                type_split = field.type
+                for split_field in field.fields:
+                    split_dict[split_field.name] = split_field.value
+            else:
+                evaluate_dict[field.name] = field.value
+
+        model = self.environment[evaluate_dict["model"]]
+        datasource = self.environment[evaluate_dict["datasource"]]
+
+        split = Split (
+            type = type_split,
+            fields = split_dict
+        )
+        
+        evaluate = Evaluate (
+            name = declaration.name,
+            model = model,
+            datasource = datasource,
+            split = split,
+            metrics = evaluate_dict["metrics"]
+        )
+
+        self.environment[declaration.name] = evaluate
 

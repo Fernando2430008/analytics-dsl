@@ -248,10 +248,10 @@ class SemanticAnalyzer():
             required_fields = ["folds"]
 
             for field in fields:
-                if field not in required_fields:
+                if field not in allowed_fields:
                     raise DSLValidationError(f"El campo '{field}' no esta permitido en 'cross_validation'")
             
-            for field in allowed_fields:
+            for field in required_fields:
                 if field not in fields:
                     raise DSLValidationError(f"El campo '{field}' debe ser incluido")
             
@@ -260,6 +260,17 @@ class SemanticAnalyzer():
             
             if fields["folds"] < 2:
                 raise DSLValidationError(f"El valor de 'folds' debe ser igual o mayor a 2")
+            
+            if "stratify" in fields:
+                if not isinstance (fields["stratify"], bool):
+                    raise DSLValidationError (f"El valor de 'stratify' debe ser booleano")
+            
+            if "random_state" in fields:
+                if not isinstance (fields["random_state"], int):
+                    raise DSLValidationError(f"El valor de 'random_state' debe ser un entero")
+                
+                if fields["random_state"] < 0:
+                    raise DSLValidationError(f"El valor de 'random_state' debe ser mayor a cero")
         else:
             raise DSLValidationError(f"'{declaration.type}' aun no permitido")
 

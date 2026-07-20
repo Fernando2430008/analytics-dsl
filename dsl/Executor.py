@@ -165,5 +165,8 @@ class Interpreter:
             metrics = evaluate_dict["metrics"]
         )
 
+        results = evaluate.run()
         self.environment[declaration.name] = evaluate
+
+        print(results)
 

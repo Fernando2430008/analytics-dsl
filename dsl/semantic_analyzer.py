@@ -234,6 +234,18 @@ class SemanticAnalyzer():
         
         if self.symbols[datasource_name]["kind"] not in ["datasource", "preprocess"]:
             raise DSLValidationError(f"'{datasource_name}' no es un datasource ni preprocess")
+        
+        allowed_metrics = ["accuracy", "precision", "recall", "f1", "auc"]
+        included_metrics = []
+
+        for metric in fields["metrics"]:
+            if metric not in allowed_metrics:
+                raise DSLValidationError(f"La metrica '{metric}' no esta permitida")
+            
+            if metric in included_metrics:
+                raise DSLValidationError(f"La metrica '{metric}' ya fue incluida")
+            
+            included_metrics.append(metric)
 
     def validate_split(self, declaration):
         fields = {}
@@ -269,7 +281,7 @@ class SemanticAnalyzer():
                 if not isinstance (fields["random_state"], int):
                     raise DSLValidationError(f"El valor de 'random_state' debe ser un entero")
                 
-                if fields["random_state"] < 0:
+                if fields["random_state"] <= 0:
                     raise DSLValidationError(f"El valor de 'random_state' debe ser mayor a cero")
         else:
             raise DSLValidationError(f"'{declaration.type}' aun no permitido")

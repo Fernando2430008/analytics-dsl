@@ -15,6 +15,7 @@ class Model:
         self.learner = learner
         self.data = data
         self.target = target
+        self.feature_columns = []
         self.trained_model = None
 
     def prepare_data(self):
@@ -48,4 +49,5 @@ class Model:
 
     def train(self, algorithm, X, y):
         algorithm.fit(X, y)
+        self.feature_columns = X.columns.tolist()
         self.trained_model = algorithm

@@ -1,10 +1,11 @@
-from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, ModelNode, EvaluateNode, EvaluateSplitNode
+from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, ModelNode, EvaluateNode, EvaluateSplitNode, PredictNode
 
 from dsl.DataSource import DataSource
 from dsl.Preprocess import Preprocess, PreprocessOperation
 from dsl.Learner import Learner, LearnerParameter
 from dsl.Model import Model
 from dsl.Evaluate import Evaluate, Split
+from dsl.Predict import Predict
 
 class Interpreter:
     def __init__(self):
@@ -30,6 +31,10 @@ class Interpreter:
         for declaration in program.declarations:
             if isinstance(declaration, EvaluateNode):
                 self.execute_evaluate(declaration)
+        
+        for declaration in program.declarations:
+            if isinstance(declaration, PredictNode):
+                self.execute_predict(declaration)
     
     def execute_datasource(self, declaration):
         fields = {}
@@ -169,4 +174,22 @@ class Interpreter:
         self.environment[declaration.name] = evaluate
 
         print(results)
+
+    def execute_predict(self, declaration):
+        predict_dict = {}
+
+        for field in declaration.fields:
+            predict_dict[field.name] = field.value
+        
+        predict = Predict (
+            name = declaration.name,
+            model = self.environment[predict_dict["model"]],
+            data = self.environment[predict_dict["datasource"]]
+        )
+
+        predictions = predict.run()
+
+        print(predictions)
+
+        self.environment[declaration.name] = predict
 

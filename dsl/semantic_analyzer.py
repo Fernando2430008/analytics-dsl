@@ -1,4 +1,4 @@
-from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, ModelNode, EvaluateNode, EvaluateSplitNode
+from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, ModelNode, EvaluateNode, EvaluateSplitNode, PredictNode
 from dsl.errors import DSLValidationError
 
 class SemanticAnalyzer():
@@ -44,6 +44,12 @@ class SemanticAnalyzer():
                     "kind" : "evaluate",
                     "node" : declaration
                 }
+            
+            elif isinstance (declaration, PredictNode):
+                self.symbols[declaration.name] = {
+                    "kind" : "predict",
+                    "node" : declaration
+                }
 
     def validate_declarations(self, program: ProgramNode):
         for declaration in program.declarations:
@@ -57,6 +63,8 @@ class SemanticAnalyzer():
                 self.validate_model(declaration)
             elif isinstance(declaration, EvaluateNode):
                 self.validate_evaluate(declaration)
+            elif isinstance(declaration, PredictNode):
+                self.validate_predict(declaration)
 
     def validate_datasource(self, declaration):
         field_names = {}
@@ -281,9 +289,35 @@ class SemanticAnalyzer():
                 if not isinstance (fields["random_state"], int):
                     raise DSLValidationError(f"El valor de 'random_state' debe ser un entero")
                 
-                if fields["random_state"] <= 0:
-                    raise DSLValidationError(f"El valor de 'random_state' debe ser mayor a cero")
+                if fields["random_state"] < 0:
+                    raise DSLValidationError(f"El valor de 'random_state' debe ser igual o mayor a cero")
         else:
             raise DSLValidationError(f"'{declaration.type}' aun no permitido")
 
+    def validate_predict(self, declaration):
+        fields = {}
+        for field in declaration.fields:
+            if field.name in fields:
+                raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
+            fields[field.name] = field.value
+        
+        required_fields = ["model", "datasource"]
 
+        for field in required_fields:
+            if field not in fields:
+                raise DSLValidationError(f"El campo '{field}' no fue incluido")
+        
+        model_name = fields["model"]
+        datasource_name = fields["datasource"]
+
+        if model_name not in self.symbols:
+            raise DSLValidationError(f"El model '{model_name}' no existe")
+        
+        if self.symbols[model_name]["kind"] != "model":
+            raise DSLValidationError(f"'{model_name}' no es un model")
+
+        if datasource_name not in self.symbols:
+            raise DSLValidationError(f"El datasource o preprocess '{datasource_name}' no existe")
+        
+        if self.symbols[datasource_name]["kind"] not in ["datasource", "preprocess"]:
+            raise DSLValidationError(f"'{datasource_name}' no es un datasource ni preprocess")

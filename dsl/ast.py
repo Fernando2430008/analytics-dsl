@@ -95,3 +95,15 @@ class EvaluateSplitNode():
 class SplitAssignmentNode():
     name:str
     value:Any
+
+###########################
+#  Clases de predict      #
+@dataclass
+class PredictNode():
+    name:str
+    fields:list
+
+@dataclass
+class PredictFieldNode():
+    name:str
+    value:str

@@ -1,7 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode, EvaluateNode, EvaluateFieldNode, EvaluateSplitNode, SplitAssignmentNode
+from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode, EvaluateNode, EvaluateFieldNode, EvaluateSplitNode, SplitAssignmentNode, PredictNode, PredictFieldNode
 from dsl.semantic_analyzer import SemanticAnalyzer
 from dsl.Executor import Interpreter
 
@@ -366,6 +366,35 @@ class LexerParser:
 
     ################################################
     #####            predict                   #####
+    def p_declaration_predict(self, p):
+        """declaration : PREDICT ID LBRACE predict_body RBRACE"""
+        p[0] = PredictNode (
+            name = p[2],
+            fields = p[4]
+        )
+    
+    def p_predict_body_multiple(self, p):
+        """predict_body : predict_body predict_field"""
+        p[0] = p[1] + [p[2]]
+    
+    def p_predict_body_single(self, p):
+        """predict_body : predict_field"""
+        p[0] = [p[1]]
+    
+    def p_predict_field_model(self, p):
+        """predict_field : MODEL ID"""
+        p[0] = PredictFieldNode (
+            name = p[1],
+            value = p[2]
+        )
+    
+    def p_predict_field_datasource(self, p):
+        """predict_field : DATASOURCE ID"""
+        p[0] = PredictFieldNode (
+            name = p[1],
+            value = p[2]
+        )
+
     ################################################
     #####           Extra rules                #####
     def p_value_bool(self, p):

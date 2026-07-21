@@ -1,7 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode, EvaluateNode, EvaluateFieldNode, EvaluateSplitNode, SplitAssignmentNode, PredictNode, PredictFieldNode
+from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode, EvaluateNode, EvaluateFieldNode, EvaluateSplitNode, SplitAssignmentNode, PredictNode, PredictFieldNode, FunctionNode
 from dsl.semantic_analyzer import SemanticAnalyzer
 from dsl.Executor import Interpreter
 
@@ -42,6 +42,13 @@ class LexerParser:
         'true':'TRUE',
         'false':'FALSE',
         'random_state':'RANDOM_STATE',
+
+        'list' : 'LIST', # Usado para el listado de datasources
+        'show' : 'SHOW', # Mostrar cabeceras de informacion
+        'info' : 'INFO',
+        'config' : 'CONFIG',
+        'delete' : 'DELETE',
+        'objects' : 'OBJECTS',
 
         #Posibles integraciones
         'optimize':'OPTIMIZE', # Necesita algoritmos de busqueda, ej: grid search, random search o Bayesian Optimization
@@ -394,6 +401,51 @@ class LexerParser:
             name = p[1],
             value = p[2]
         )
+
+    ################################################
+    #####           Extra functions            #####
+
+    def p_function_list_objects(self, p):
+        """declaration : LIST list_type"""
+        p[0] = FunctionNode(
+            action=p[1],
+            option=p[2]
+        )
+
+    def p_list_type(self, p):
+        """list_type : OBJECTS
+                    | DATASOURCE
+                    | PREPROCESS
+                    | LEARNER
+                    | MODEL
+                    | EVALUATE
+                    | PREDICT"""
+        p[0] = p[1]
+    
+    def p_function_delete_object(self, p):
+        """declaration : DELETE ID"""
+        p[0] = FunctionNode (
+            action = p[1],
+            target = p[2]
+        )
+    
+    def p_function_show_config_info(self, p):
+        """declaration : SHOW CONFIG ID"""
+        p[0] = FunctionNode (
+            action = p[1],
+            option = p[2],
+            target = p[3]
+        )
+    
+    ####                 data                   ####
+    def p_function_show_data_info (self, p):
+        """declaration : SHOW INFO ID"""
+        p[0] = FunctionNode (
+            action= p[1],
+            option = p[2],
+            target = p[3]
+        )
+
 
     ################################################
     #####           Extra rules                #####

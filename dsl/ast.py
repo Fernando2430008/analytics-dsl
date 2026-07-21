@@ -107,3 +107,11 @@ class PredictNode():
 class PredictFieldNode():
     name:str
     value:str
+
+###########################
+#  Clases para funciones  #
+@dataclass
+class FunctionNode():
+    action: str
+    target: str
+    option: str | None = None

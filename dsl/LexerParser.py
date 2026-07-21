@@ -401,6 +401,13 @@ class LexerParser:
             name = p[1],
             value = p[2]
         )
+    
+    def p_predict_field_save_to(self, p):
+        """predict_field : SAVE_TO STRING"""
+        p[0] = PredictFieldNode (
+            name = p[1],
+            value = p[2]
+        )
 
     ################################################
     #####           Extra functions            #####

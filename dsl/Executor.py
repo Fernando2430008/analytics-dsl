@@ -184,7 +184,8 @@ class Interpreter:
         predict = Predict (
             name = declaration.name,
             model = self.environment[predict_dict["model"]],
-            data = self.environment[predict_dict["datasource"]]
+            data = self.environment[predict_dict["datasource"]],
+            save_to = predict_dict.get("save_to")
         )
 
         predictions = predict.run()

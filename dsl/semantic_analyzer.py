@@ -307,6 +307,12 @@ class SemanticAnalyzer():
             if field not in fields:
                 raise DSLValidationError(f"El campo '{field}' no fue incluido")
         
+        if "save_to" in fields:
+            if not fields["save_to"].lower().endswith(".csv"):
+                raise DSLValidationError(
+                    "La ubicación de 'save_to' debe terminar en '.csv'"
+                )
+        
         model_name = fields["model"]
         datasource_name = fields["datasource"]
 

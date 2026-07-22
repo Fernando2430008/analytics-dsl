@@ -412,11 +412,11 @@ class LexerParser:
     ################################################
     #####           Extra functions            #####
 
-    def p_function_list_objects(self, p):
+    def p_function_list(self, p):
         """declaration : LIST list_type"""
         p[0] = FunctionNode(
-            action=p[1],
-            option=p[2]
+            action = p[1],
+            target = p[2]
         )
 
     def p_list_type(self, p):

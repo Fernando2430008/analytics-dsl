@@ -1,4 +1,4 @@
-from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, ModelNode, EvaluateNode, EvaluateSplitNode, PredictNode
+from dsl.ast import ProgramNode, DataSourceNode, PreprocessNode, LearnerNode, ModelNode, EvaluateNode, EvaluateSplitNode, PredictNode, FunctionNode
 from dsl.errors import DSLValidationError
 
 class SemanticAnalyzer():
@@ -65,6 +65,8 @@ class SemanticAnalyzer():
                 self.validate_evaluate(declaration)
             elif isinstance(declaration, PredictNode):
                 self.validate_predict(declaration)
+            elif isinstance(declaration, FunctionNode):
+                self.validate_function(declaration)
 
     def validate_datasource(self, declaration):
         field_names = {}
@@ -327,3 +329,11 @@ class SemanticAnalyzer():
         
         if self.symbols[datasource_name]["kind"] not in ["datasource", "preprocess"]:
             raise DSLValidationError(f"'{datasource_name}' no es un datasource ni preprocess")
+
+    def validate_function(self, declaration):
+        if declaration.target not in self.symbols:
+            raise DSLValidationError(f"'{declaration.target}' no existe")
+        
+        if declaration.option == "info":
+            if self.symbols[declaration.target]["kind"] not in ["datasource", "preprocess"]:
+                raise DSLValidationError(f"'{declaration.target}' no es un datasource ni preprocess")

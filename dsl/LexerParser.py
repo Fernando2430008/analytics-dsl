@@ -46,12 +46,13 @@ class LexerParser:
         'split':'SPLIT',
         'train':'TRAIN',
         'test':'TEST',
-        'validation':'VALIDATION',
         'folds':'FOLDS',
         'stratify':'STRATIFY',
         'true':'TRUE',
         'false':'FALSE',
         'random_state':'RANDOM_STATE',
+
+        'save_to':'SAVE_TO', # Forma de guardar predicciones
 
         'list' : 'LIST', # Usado para el listado de datasources
         'show' : 'SHOW', # Mostrar cabeceras de informacion
@@ -61,14 +62,13 @@ class LexerParser:
         'objects' : 'OBJECTS',
 
         #Posibles integraciones
-        'optimize':'OPTIMIZE', # Necesita algoritmos de busqueda, ej: grid search, random search o Bayesian Optimization
-        'save_to':'SAVE_TO', # Forma de guardar predicciones
-        'expect':'EXPECT',   # Reglas para datos
-        'export':'EXPORT', # Exportacion del modelo
+        # 'optimize':'OPTIMIZE',  Necesita algoritmos de busqueda, ej: grid search, random search o Bayesian Optimization
+        # 'expect':'EXPECT',    Reglas para datos
+        # 'export':'EXPORT',  Exportacion del modelo
     }
         
-    tokens = ['LPAREN', 'RPAREN', 'EQUALS', 'LBRACKET', 'RBRACKET', 'LBRACE', 'RBRACE',
-        'COMMA', 'GREATER','LESS', 'ID', 'STRING', 'NUMBER', 'COMMENT'] + list(reserved.values())
+    tokens = ['EQUALS', 'LBRACKET', 'RBRACKET', 'LBRACE', 'RBRACE',
+        'COMMA', 'ID', 'STRING', 'NUMBER'] + list(reserved.values())
 
     # Constructor
     def __init__(self):
@@ -81,22 +81,15 @@ class LexerParser:
     ###############################################
     #               Reglas lexicas                #
     ###############################################
-    t_LPAREN = r'\('
-    t_RPAREN = r'\)'
     t_EQUALS = r'='
     t_LBRACKET = r'\['
     t_RBRACKET = r'\]'
     t_LBRACE = r'\{'
     t_RBRACE = r'\}'
     t_COMMA = r','
-    t_GREATER = r'>'
-    t_LESS = r'<'
 
     t_ignore = ' \t' # Ignorar espacios y tabulaciones
-
-    def t_COMMENT (self, t):
-        r'\#.*'
-        pass
+    t_ignore_COMMENT = r'\#.*' # Ignorar comentarios
 
     def t_ID (self, t):
         r'[a-zA-Z_]\w*'

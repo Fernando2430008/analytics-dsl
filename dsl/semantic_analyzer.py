@@ -12,6 +12,9 @@ class SemanticAnalyzer():
 
     def register_symbols(self, program: ProgramNode):
         for declaration in program.declarations:
+            if isinstance(declaration, FunctionNode):
+                continue
+
             if declaration.name in self.symbols:
                 raise DSLValidationError(f"El nombre '{declaration.name}' ya fue declarado anteriormente")
 
@@ -331,6 +334,9 @@ class SemanticAnalyzer():
             raise DSLValidationError(f"'{datasource_name}' no es un datasource ni preprocess")
 
     def validate_function(self, declaration):
+        if declaration.action == "list":
+            return
+    
         if declaration.target not in self.symbols:
             raise DSLValidationError(f"'{declaration.target}' no existe")
         

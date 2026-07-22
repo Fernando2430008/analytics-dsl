@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
 
-from dsl.errors import DSLValidationError
-
 class Learner():
     name:str
     algorithm:str

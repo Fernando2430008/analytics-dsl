@@ -28,19 +28,13 @@ class Model:
 
     def create_algorithm(self, params):
         if self.learner.algorithm == "random_forest":
-            if params is None:
-                params = {}
-
-            if "trees" not in params:
-                params["trees"] = 100
-
-            if "depth" not in params:
-                params["depth"] = 10
-
             algorithm = RandomForestClassifier(
-                n_estimators = params["trees"],
-                max_depth = params["depth"]
+                n_estimators=params.get("trees", 100),
+                max_depth=params.get("depth", 10),
+                class_weight="balanced" if params.get("balance", False) else None,
+                random_state=params.get("random_state")
             )
+            
         else:
             raise DSLValidationError(f"Algoritmo '{self.learner.algorithm}' no soportado")
         

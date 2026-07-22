@@ -259,7 +259,9 @@ class LexerParser:
         p[0] = [p[1]]
 
     def p_learner_parameter_field_assignment(self, p):
-        """learner_parameter_field : ID EQUALS NUMBER"""
+        """learner_parameter_field : ID EQUALS NUMBER
+                                    | ID EQUALS value
+                                    | RANDOM_STATE EQUALS NUMBER"""
         p[0] = ParameterAssignmentNode(
             name = p[1],
             value = p[3]
@@ -492,6 +494,8 @@ class LexerParser:
     def parse(self, code_string):
         previous_symbols = self.semantic_analyzer.symbols.copy()
         previous_environment = self.interpreter.environment.copy()
+
+        self.lexer.lineno = 1
 
         try:
             ast = self.parser.parse(code_string, lexer=self.lexer)

@@ -163,22 +163,30 @@ class SemanticAnalyzer():
             field_names[field.name] = field.value
 
         if algorithm_value == "random_forest":
-            allowed_fields = ["trees", "depth"]
+            allowed_fields = ["trees", "depth", "balance", "random_state"]
 
         for field in field_names:
             if field not in allowed_fields:
                 raise DSLValidationError(f"El campo '{field}' no esta permitido en el algoritmo '{algorithm_value}'")
 
         if "trees" in field_names:
-            if not isinstance(field_names["trees"], int):
+            if type(field_names["trees"]) is not int:
                 raise DSLValidationError(f"El valor de 'trees' debe ser un entero")
             if field_names["trees"] <= 0:
                 raise DSLValidationError(f"El valor de 'trees' debe ser mayor a cero")
         if "depth" in field_names:
-            if not isinstance(field_names["depth"], int):
+            if type(field_names["depth"]) is not int:
                 raise DSLValidationError(f"El valor de 'depth' debe ser un entero")
             if field_names["depth"] <= 0:
                 raise DSLValidationError(f"El valor de 'depth' debe ser mayor a cero")
+        if "balance" in field_names:
+            if not isinstance(field_names["balance"], bool):
+                raise DSLValidationError(f"El valor de 'balance' debe ser boleano")
+        if "random_state" in field_names:
+            if type (field_names["random_state"]) is not int:
+                raise DSLValidationError(f"El valor de 'random_state' debe ser un entero")
+            if field_names["random_state"] < 0:
+                raise DSLValidationError(f"El valor de 'random_state' debe ser igual o mayor a cero")
             
     def validate_model(self, declaration):
         field_names = {}

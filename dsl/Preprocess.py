@@ -14,6 +14,10 @@ class Preprocess:
         self.operations = operations
     
     def drop_operation(self, operation, data):
+        for column in operation.columns:
+            if column not in data.columns:
+                raise DSLValidationError(f"La columna '{column}' no se encuentra en el datasource")
+            
         return data.drop(columns = operation.columns)
     
     def impute_operation(self, operation, data):

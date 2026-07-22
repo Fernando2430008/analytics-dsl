@@ -1,7 +1,17 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-from dsl.ast import ProgramNode, DataSourceNode, DataSourceFieldNode, PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode, LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode, ModelNode, ModelFieldNode, EvaluateNode, EvaluateFieldNode, EvaluateSplitNode, SplitAssignmentNode, PredictNode, PredictFieldNode, FunctionNode
+from dsl.errors import DSLError, DSLSyntaxError
+
+from dsl.ast import ProgramNode
+from dsl.ast import DataSourceNode, DataSourceFieldNode
+from dsl.ast import PreprocessNode, PreprocessSimpleFieldNode, PreprocessFieldNode
+from dsl.ast import LearnerNode, LearnerFieldNode, LearnerParametersNode, ParameterAssignmentNode
+from dsl.ast import ModelNode, ModelFieldNode
+from dsl.ast import EvaluateNode, EvaluateFieldNode, EvaluateSplitNode, SplitAssignmentNode
+from dsl.ast import PredictNode, PredictFieldNode
+from dsl.ast import FunctionNode
+
 from dsl.semantic_analyzer import SemanticAnalyzer
 from dsl.Executor import Interpreter
 
@@ -111,8 +121,7 @@ class LexerParser:
         t.lexer.lineno += len(t.value)
 
     def t_error(self, t):
-        print(f"Caracter no valido '{t.value[0]}'")
-        t.lexer.skip(1)
+        raise DSLSyntaxError(f"Caracter no válido '{t.value[0]}' en la línea {t.lineno}")
 
 
     ###############################################
@@ -479,32 +488,48 @@ class LexerParser:
 
     def p_error(self, p):
         if p:
-            print(
-                f"Syntax error at "
-                f"'{p.value}' line {p.lineno}"
-            )
-        else:
-            print("Unexpected EOF")
+            raise DSLSyntaxError(f"Error de sintaxis en '{p.value}', línea {p.lineno}")
+
+        raise DSLSyntaxError("Final inesperado")
 
     #############################################
     #         Metodos de clase                  #
     #############################################
 
     def parse(self, code_string):
-        ast = self.parser.parse(code_string, lexer = self.lexer)
-        self.semantic_analyzer.analyze(ast)
-        self.interpreter.execute(ast, self.semantic_analyzer.symbols)
-        return ast
+        previous_symbols = self.semantic_analyzer.symbols.copy()
+        previous_environment = self.interpreter.environment.copy()
+
+        try:
+            ast = self.parser.parse(code_string, lexer=self.lexer)
+            self.semantic_analyzer.analyze(ast)
+            self.interpreter.execute(
+                ast,
+                self.semantic_analyzer.symbols
+            )
+            return ast
+
+        except Exception:
+            self.semantic_analyzer.symbols = previous_symbols
+            self.interpreter.environment = previous_environment
+            raise
     
-    # Funcion unicamente para probar el analizador
+    # Comienzo de la ejecucion
     def run(self):
         print("Comenzando analizador, presiona CTRL + C para salir")
+
         while True:
             try:
-                code = input('Entrada > ')
-            except EOFError:
+                code = input("Entrada > ")
+
+                if not code:
+                    continue
+
+                ast = self.parse(code)
+
+            except (EOFError, KeyboardInterrupt):
+                print()
                 break
-            if not code:
-                continue
-            ast = self.parse(code)
-            print(ast)
+
+            except DSLError as error:
+                print(f"Error: {error}")

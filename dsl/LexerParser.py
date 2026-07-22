@@ -493,7 +493,7 @@ class LexerParser:
     def parse(self, code_string):
         ast = self.parser.parse(code_string, lexer = self.lexer)
         self.semantic_analyzer.analyze(ast)
-        self.interpreter.execute(ast)
+        self.interpreter.execute(ast, self.semantic_analyzer.symbols)
         return ast
     
     # Funcion unicamente para probar el analizador

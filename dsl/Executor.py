@@ -1,4 +1,4 @@
-from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, ModelNode, EvaluateNode, EvaluateSplitNode, PredictNode
+from dsl.ast import DataSourceNode, PreprocessNode, PreprocessFieldNode, PreprocessSimpleFieldNode, LearnerNode, LearnerFieldNode, ModelNode, EvaluateNode, EvaluateSplitNode, PredictNode, FunctionNode
 
 from dsl.DataSource import DataSource
 from dsl.Preprocess import Preprocess, PreprocessOperation
@@ -11,7 +11,7 @@ class Interpreter:
     def __init__(self):
         self.environment = {}
 
-    def execute(self, program):
+    def execute(self, program, symbols):
         for declaration in program.declarations:
             if isinstance(declaration, DataSourceNode):
                 self.execute_datasource(declaration)
@@ -35,6 +35,10 @@ class Interpreter:
         for declaration in program.declarations:
             if isinstance(declaration, PredictNode):
                 self.execute_predict(declaration)
+        
+        for declaration in program.declarations:
+            if isinstance(declaration, FunctionNode):
+                self.execute_function(declaration, symbols)
     
     def execute_datasource(self, declaration):
         fields = {}
@@ -194,3 +198,27 @@ class Interpreter:
 
         self.environment[declaration.name] = predict
 
+    def execute_function(self, declaration, symbols):
+        if declaration.action == "list":
+            if declaration.target == "objects":
+                objects = list(symbols.keys())
+            else:
+                objects = []
+
+                for name in symbols:
+                    if symbols[name]["kind"] == declaration.target:
+                        objects.append(name)
+
+            print(objects)
+
+        elif declaration.action == "show":
+            if declaration.option == "info":
+                self.environment[declaration.target].info()
+
+            elif declaration.option == "config":
+                print(symbols[declaration.target]["node"])
+
+        elif declaration.action == "delete":
+            self.environment.pop(declaration.target, None)
+            symbols.pop(declaration.target, None)
+            print(f"'{declaration.target}' fue eliminado")

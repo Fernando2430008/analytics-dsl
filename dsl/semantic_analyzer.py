@@ -133,7 +133,7 @@ class SemanticAnalyzer():
     def validate_learner(self, declaration):
         field_names = []
         algorithm_value = None
-        supported_algorithms = ["random_forest"]
+        supported_algorithms = ["random_forest", "logistic_regression", "hist_gradient_boosting"]
         for field in declaration.fields:
             if field.name in field_names:
                 raise DSLValidationError(f"El campo '{field.name}' ya fue incluido")
@@ -164,24 +164,66 @@ class SemanticAnalyzer():
 
         if algorithm_value == "random_forest":
             allowed_fields = ["trees", "depth", "balance", "random_state"]
+        elif algorithm_value == "logistic_regression":
+            allowed_fields = ["c", "iterations", "balance", "random_state"]
+        elif algorithm_value == "hist_gradient_boosting":
+            allowed_fields = ["iterations", "learning_rate", "depth", "balance", "random_state"]
 
         for field in field_names:
             if field not in allowed_fields:
                 raise DSLValidationError(f"El campo '{field}' no esta permitido en el algoritmo '{algorithm_value}'")
 
-        if "trees" in field_names:
-            if type(field_names["trees"]) is not int:
-                raise DSLValidationError(f"El valor de 'trees' debe ser un entero")
-            if field_names["trees"] <= 0:
-                raise DSLValidationError(f"El valor de 'trees' debe ser mayor a cero")
-        if "depth" in field_names:
-            if type(field_names["depth"]) is not int:
-                raise DSLValidationError(f"El valor de 'depth' debe ser un entero")
-            if field_names["depth"] <= 0:
-                raise DSLValidationError(f"El valor de 'depth' debe ser mayor a cero")
-        if "balance" in field_names:
-            if not isinstance(field_names["balance"], bool):
-                raise DSLValidationError(f"El valor de 'balance' debe ser boleano")
+        if algorithm_value == "random_forest":
+            if "trees" in field_names:
+                if type(field_names["trees"]) is not int:
+                    raise DSLValidationError(f"El valor de 'trees' debe ser un entero")
+                if field_names["trees"] <= 0:
+                    raise DSLValidationError(f"El valor de 'trees' debe ser mayor a cero")
+            if "depth" in field_names:
+                if type(field_names["depth"]) is not int:
+                    raise DSLValidationError(f"El valor de 'depth' debe ser un entero")
+                if field_names["depth"] <= 0:
+                    raise DSLValidationError(f"El valor de 'depth' debe ser mayor a cero")
+            if "balance" in field_names:
+                if not isinstance(field_names["balance"], bool):
+                    raise DSLValidationError(f"El valor de 'balance' debe ser booleano")
+        
+        elif algorithm_value == "logistic_regression":
+            if "c" in field_names:
+                if isinstance(field_names["c"], bool) or not isinstance(field_names["c"], (int, float)):
+                    raise DSLValidationError(f"El valor de 'c' debe ser un numero")
+                if field_names["c"] <= 0:
+                    raise DSLValidationError(f"El valor de 'c' debe ser mayor a cero")
+            if "iterations" in field_names:
+                if type (field_names["iterations"]) is not int:
+                    raise DSLValidationError(f"El valor de 'iterations' debe ser un entero")
+                if field_names["iterations"] < 1:
+                    raise DSLValidationError(f"El valor de 'iterations' debe ser mayor a cero")
+            if "balance" in field_names:
+                if not isinstance(field_names["balance"], bool):
+                    raise DSLValidationError(f"El valor de 'balance' debe ser booleano")
+            
+        elif algorithm_value == "hist_gradient_boosting":
+            if "iterations" in field_names:
+                if type (field_names["iterations"]) is not int:
+                    raise DSLValidationError(f"El valor de 'iterations' debe ser un entero")
+                if field_names["iterations"] < 1:
+                    raise DSLValidationError(f"El valor de 'iterations' debe ser mayor a cero")
+            if "learning_rate" in field_names:
+                if isinstance(field_names["learning_rate"], bool) or not isinstance(field_names["learning_rate"], (int, float)):
+                    raise DSLValidationError(f"El valor de 'learning_rate' debe ser un numero")
+                if field_names["learning_rate"] <= 0:
+                    raise DSLValidationError(f"El valor de 'learning_rate' debe ser mayor a cero")
+            if "depth" in field_names:
+                if type(field_names["depth"]) is not int:
+                    raise DSLValidationError(f"El valor de 'depth' debe ser un entero")
+                if field_names["depth"] <= 0:
+                    raise DSLValidationError(f"El valor de 'depth' debe ser mayor a cero")
+            if "balance" in field_names:
+                if not isinstance(field_names["balance"], bool):
+                    raise DSLValidationError(f"El valor de 'balance' debe ser booleano")
+            
+
         if "random_state" in field_names:
             if type (field_names["random_state"]) is not int:
                 raise DSLValidationError(f"El valor de 'random_state' debe ser un entero")

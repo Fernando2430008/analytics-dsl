@@ -380,7 +380,7 @@ class SemanticAnalyzer():
             # Suma para verificar el uso de los datos
             sum_data = fields["train"] + fields["test"]
 
-            if sum_data > 0.9999 and sum_data < 1.0001:
+            if abs(sum_data - 1.0) > 0.0001:
                 raise DSLValidationError(f"La suma de 'train' y 'test' debe ser de 1")
 
             if "stratify" in fields:

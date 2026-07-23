@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from sklearn.model_selection import KFold, StratifiedKFold
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, train_test_split
+from sklearn.base import clone
+from sklearn.metrics import get_scorer
 
 class Evaluate():
     name:str
@@ -53,10 +55,9 @@ class Evaluate():
             }
         
         return results
-
-    def run(self):
-        X, y = self.prepare_data()
-        splitter = self.split.create_splitter()
+    
+    def run_cross_validation(self, X, y):
+        splitter = self.split.create_splitter_cv()
         scoring = self.get_scoring()
 
         scores = cross_validate(
@@ -71,13 +72,40 @@ class Evaluate():
         results = self.calculate_results(scores, scoring)
         self.results = results
         return results
+    
+    def run_holdout(self, X, y):
+        X_train, X_test, y_train, y_test = self.split.create_splitter_h(X,y)
+        scoring = self.get_scoring()
+
+        model_copy = clone(self.model.trained_model)
+        model_copy.fit(X_train, y_train)
+
+        results = {}
+        for metric, scoring_name in zip(self.metrics, scoring):
+            scorer = get_scorer(scoring_name)
+            score = scorer(model_copy, X_test, y_test)
+            results[metric] = {"score": score}
+        
+        self.results = results
+        
+        return results
+
+    def run(self):
+        X, y = self.prepare_data()
+
+        if self.split.type == "cross_validation":
+            results = self.run_cross_validation(X, y)
+        elif self.split.type == "holdout":
+            results = self.run_holdout(X,y)
+
+        return results
 
 @dataclass
 class Split():
     type:str
     fields:dict
 
-    def create_splitter(self):
+    def create_splitter_cv(self):
         folds = self.fields["folds"]
         stratify = self.fields.get("stratify", False)
         random_state = self.fields.get("random_state")
@@ -96,3 +124,21 @@ class Split():
             shuffle = shuffle,
             random_state = random_state
         )
+    
+    def create_splitter_h(self, X, y):
+        train_size = self.fields["train"]
+        test_size = self.fields["test"]
+        random_state = self.fields.get("random_state")
+        stratify = self.fields.get("stratify", False)
+
+        stratify_data = y if stratify else None
+
+        X_train, X_test, y_train, y_test = train_test_split(X, 
+                                                            y, 
+                                                            train_size = train_size, 
+                                                            test_size = test_size, 
+                                                            random_state = random_state, 
+                                                            stratify = stratify_data)
+
+        return X_train, X_test, y_train, y_test
+

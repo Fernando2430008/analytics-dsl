@@ -346,6 +346,52 @@ class SemanticAnalyzer():
                 
                 if fields["random_state"] < 0:
                     raise DSLValidationError(f"El valor de 'random_state' debe ser igual o mayor a cero")
+        
+        elif declaration.type == "holdout":
+            allowed_fields = ["train", "test", "stratify", "random_state"]
+            required_fields = ["train", "test"]
+
+            for field in fields:
+                if field not in allowed_fields:
+                    raise DSLValidationError(f"El campo '{field}' no esta permitido en 'holdout'")
+            
+            for field in required_fields:
+                if field not in fields:
+                    raise DSLValidationError(f"El campo '{field}' debe ser incluido")
+            
+            if isinstance(fields["train"], bool) or not isinstance(fields["train"], float):
+                raise DSLValidationError(f"El valor de 'train' debe ser flotante")
+            
+            if fields["train"] <= 0:
+                raise DSLValidationError (f"El valor de 'train' debe ser mayor a cero")
+            
+            if fields["train"] >= 1:
+                raise DSLValidationError(f"El valor de 'train' debe ser menor a 1")
+            
+            if isinstance(fields["test"], bool) or not isinstance(fields["test"], float):
+                raise DSLValidationError(f"El valor de 'test' debe ser flotante")
+            
+            if fields["test"] <= 0:
+                raise DSLValidationError (f"El valor de 'test' debe ser mayor a cero")
+            
+            if fields["test"] >= 1:
+                raise DSLValidationError(f"El valor de 'test' debe ser menor a 1")
+            
+            # Suma para verificar el uso de los datos
+            sum_data = fields["train"] + fields["test"]
+
+            if sum_data > 0.9999 and sum_data < 1.0001:
+                raise DSLValidationError(f"La suma de 'train' y 'test' debe ser de 1")
+
+            if "stratify" in fields:
+                if isinstance(fields["stratify"], int) or not isinstance(fields["stratify"], bool):
+                    raise DSLValidationError(f"El valor de 'stratify' debe ser booleano")
+            if "random_state" in fields:
+                if isinstance(fields["random_state"], bool) or not isinstance(fields["random_state"], int):
+                    raise DSLValidationError(f"El valor de 'random_state' debe ser un entero")
+                if fields["random_state"] < 0:
+                    raise DSLValidationError(f"El valor de 'random_state' debe ser igual o mayor a cero")
+
         else:
             raise DSLValidationError(f"'{declaration.type}' aun no permitido")
 

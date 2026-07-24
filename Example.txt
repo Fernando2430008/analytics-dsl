@@ -1,54 +1,61 @@
 datasource customers { 
     type csv 
-    location "s3://datasets/customers.csv" 
-} 
- 
+    location "C:/Users/ferna/Downloads/Churn_Modelling.csv" 
+}
+
 preprocess customer_pipe { 
     input customers 
-    drop ["id"]
-    impute mean ["age","income"] 
-    scale standard ["age","income"] 
-    encode onehot ["gender","city"] 
-} 
- 
+    drop ["RowNumber", "CustomerId", "Surname"] 
+    impute mean ["CreditScore", "Age", "Tenure", "Balance", "EstimatedSalary"] 
+    scale standard ["CreditScore", "Age", "Tenure", "Balance", "EstimatedSalary"] 
+    encode onehot ["Geography", "Gender"] 
+}
+
 learner classifier { 
     algorithm random_forest 
     parameters { 
         trees = 200 
         depth = 10 
+        balance = true 
+        random_state = 42 
     } 
-} 
- 
+}
+
 model churn_model { 
     fit classifier 
     using customer_pipe 
-    target churn 
-} 
+    target Exited 
+}
 
-evaluate churn_eval { 
+evaluate churn_cv { 
     model churn_model 
-    datasource customers 
+    datasource customer_pipe 
     split cross_validation { 
-        folds 10 
+        folds 5 
         stratify true 
         random_state 42 
     } 
     metrics [accuracy, precision, recall, f1, auc] 
-} 
+}
 
-evaluate churn_eval { 
+evaluate churn_holdout { 
     model churn_model 
-    datasource customers 
+    datasource customer_pipe 
     split holdout { 
-        train 0.7 
-        test 0.3 
+        train 0.8 
+        test 0.2 
         stratify true 
         random_state 42 
     } 
-    metrics [accuracy,precision,recall,f1] 
-} 
+    metrics [accuracy, precision, recall, f1, auc] 
+}
 
 predict churn_prediction { 
     model churn_model 
-    datasource customers 
-} 
+    datasource customer_pipe 
+    save_to "C:/Users/ferna/Downloads/churn_predictions.csv" }
+
+# Funciones adicionales.
+list objects
+show config churn_model
+show info customer_pipe

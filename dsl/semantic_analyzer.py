@@ -384,7 +384,7 @@ class SemanticAnalyzer():
                 raise DSLValidationError(f"La suma de 'train' y 'test' debe ser de 1")
 
             if "stratify" in fields:
-                if isinstance(fields["stratify"], int) or not isinstance(fields["stratify"], bool):
+                if not isinstance(fields["stratify"], bool):
                     raise DSLValidationError(f"El valor de 'stratify' debe ser booleano")
             if "random_state" in fields:
                 if isinstance(fields["random_state"], bool) or not isinstance(fields["random_state"], int):

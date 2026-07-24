@@ -1,6 +1,3 @@
-ply>=3.11
-pandas
-scikit-learn
-
-# Version de python minima : 3.7
-# Necesaria para el uso de las dataclass
+ply==3.11
+pandas==2.2.3
+scikit-learn==1.8.0

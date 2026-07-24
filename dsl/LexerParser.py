@@ -515,14 +515,20 @@ class LexerParser:
     def run(self):
         print("Comenzando analizador, presiona CTRL + C para salir")
 
+        buffer = []
         while True:
             try:
-                code = input("Entrada > ")
+                line = input("... " if buffer else "Entrada > ")
 
-                if not code:
+                if line.strip():
+                    buffer.append(line)
                     continue
 
-                ast = self.parse(code)
+                if buffer:
+                    code = "\n".join(buffer)
+                    buffer.clear()
+                    self.parse(code)
+
 
             except (EOFError, KeyboardInterrupt):
                 print()
